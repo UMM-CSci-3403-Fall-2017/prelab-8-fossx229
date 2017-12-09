@@ -48,35 +48,39 @@ public class ThreadedSearch<T> implements Runnable {
     * in the shared `Answer` instance.
     */
 	  
-	  Answer a = new Answer();
+	  Answer answer = new Answer();
 	  Thread[] threads = new Thread[numThreads];
+	  //partition the array for threads
 	  int partition = list.size() / numThreads;
 	  for(int i = 0; i < numThreads; i++) {  
+		  //assign an ending and starting index for each thread
 			threads[i] = new Thread (new ThreadedSearch(target, list, partition * i, (partition* (i + 1))-1, answer));
 			threads[i].start();
 	  }
-	  try { 
+	  // wait for threads to finish
 		  for(int i = 0; i < numThreads; i++) {
 			  threads[i].join();
+
 		  }
-	  } catch (InterruptedException e) {
-		  
-	  }
+
+	  
     return answer.getAnswer();
   }
 
   public void run() {
 	  for (int i = 0; i < list.size(); i++) {
+		  System.out.println("run");
+		  //Search for target if found stop
 		  if (list.get(i).equals(target)) {
 			  answer.setAnswer(true);
-			  return;
+			  break;
 		  }
 	  }
 
   }
 
   private class Answer {
-    public volatile boolean  answer = false;
+    private boolean  answer = false;
 
     public boolean getAnswer() {
     	
